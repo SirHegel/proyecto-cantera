@@ -24,7 +24,7 @@ Next.js mantiene las credenciales y el trabajo de extracción en el servidor. Re
 
 `lib/providers/` implementa las interfaces de búsqueda e IA. El modo fixture produce resultados deterministas; live llama a las APIs, y cassette conserva una respuesta real para pruebas posteriores. Las webs ficticias se sirven desde `/demo-site/[slug]` para que el extractor recorra HTML sin depender de internet.
 
-`lib/pipeline/` separa descubrimiento, extracción, prefiltro y puntuación. El score combina encaje de nicho, señal del problema, capacidad estimada y contactabilidad. Las citas de evidencia se comprueban contra el texto extraído. Una evidencia que no aparece en ese texto se descarta.
+`lib/pipeline/` separa descubrimiento, extracción, prefiltro y puntuación. El score combina encaje de nicho, señal del problema, actividad comercial observable y contactabilidad. Las citas de evidencia se comprueban contra el texto extraído. Una evidencia que no aparece en ese texto se descarta.
 
 ## Cuentas y persistencia
 

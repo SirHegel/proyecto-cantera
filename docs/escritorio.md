@@ -4,6 +4,10 @@
 
 Electron incluye el navegador y Node necesarios para ejecutar Cantera. El usuario final abre un instalador, crea una cuenta local y usa la aplicación. El servidor solo escucha en `127.0.0.1`; se inicia y detiene con la ventana.
 
+Los cinco archivos de la versión 1.0.0 están disponibles en la [Release de Cantera](https://github.com/SirHegel/proyecto-cantera/releases/tag/v1.0.0), junto con `SHA256SUMS.txt` para comprobar su integridad. Las descargas requieren acceso al repositorio privado. Puedes distribuir los instaladores directamente sin compartir el código ni las cuentas de desarrollo.
+
+En Debian/Ubuntu, se recomienda instalar el paquete `.deb` con el gestor de paquetes: incluye la configuración de integración y sandbox. En otras distribuciones Linux, da permiso de ejecución al AppImage desde las propiedades del archivo; requiere FUSE2 y un sistema compatible con el sandbox de Chromium. Si falta FUSE, `APPIMAGE_EXTRACT_AND_RUN=1 ./Cantera-1.0.0-linux-x86_64.AppImage` evita el montaje, pero no resuelve restricciones del sandbox. Si este falla, utiliza un paquete instalado compatible con tu distribución.
+
 Los paquetes actuales usan Electron 44 y requieren Windows 10 o posterior, o macOS 13 Ventura o posterior; estos mínimos corresponden a los [cambios de compatibilidad oficiales](https://www.electronjs.org/docs/latest/breaking-changes). Linux necesita un escritorio x64 y las bibliotecas gráficas del sistema. No se generan paquetes de 32 bits.
 
 El empaquetado usa [electron-builder](https://www.electron.build/docs/) y el servidor [standalone de Next.js](https://nextjs.org/docs/app/api-reference/config/next-config-js/output). Sus archivos se copian a recursos externos al ASAR. `scripts/prepare-desktop.mjs` excluye configuración privada, SQLite y cassettes del paquete.

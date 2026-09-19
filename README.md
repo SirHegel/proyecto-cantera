@@ -6,7 +6,7 @@ Incluye una aplicación de escritorio para Windows, macOS y Linux, y una versió
 
 ## Instalar la aplicación
 
-Los instaladores se generan desde [GitHub → Actions → Instaladores de escritorio](https://github.com/SirHegel/proyecto-cantera/actions/workflows/desktop.yml) → **Run workflow**. El repositorio es privado: necesitas acceso para ver sus ejecuciones y descargas. Cuando la ejecución termine, descarga el artefacto de tu sistema:
+Descarga el archivo de tu sistema desde [Cantera 1.0.0 — instaladores](https://github.com/SirHegel/proyecto-cantera/releases/tag/v1.0.0). El repositorio es privado: necesitas acceso para descargar desde GitHub. También puedes instalar los archivos compartidos directamente por el responsable del proyecto.
 
 | Sistema             | Archivo                           | Instalación                                       |
 | ------------------- | --------------------------------- | ------------------------------------------------- |
@@ -16,7 +16,9 @@ Los instaladores se generan desde [GitHub → Actions → Instaladores de escrit
 | Linux x64           | `Cantera-…-linux-x86_64.AppImage` | Dale permiso de ejecución y ábrelo.               |
 | Debian/Ubuntu x64   | `Cantera-…-linux-amd64.deb`       | Instálalo con el gestor de paquetes.              |
 
-El instalador incluye el entorno necesario: el usuario final no necesita Node.js, Docker ni una terminal. Los paquetes actuales no incorporan firma comercial de Windows ni notarización de Apple; el sistema puede advertir sobre el editor. El workflow configura su construcción, y su resultado en GitHub determina qué paquetes se han generado correctamente. Consulta [distribución y firma](docs/escritorio.md).
+El instalador incluye el entorno necesario: el usuario final no necesita Node.js ni Docker. Los paquetes actuales no incorporan firma comercial de Windows ni notarización de Apple; el sistema puede advertir sobre el editor. Los cuatro ejecutables se abrieron correctamente en sus sistemas mediante pruebas automatizadas de registro y persistencia. Consulta la [validación de esta versión](docs/validacion.md) y las instrucciones de [distribución y firma](docs/escritorio.md).
+
+En Debian/Ubuntu se recomienda el `.deb`, que configura la integración y el sandbox al instalarse. El AppImage necesita FUSE2 y un sistema compatible con el sandbox de Chromium.
 
 ## Primer recorrido
 
@@ -100,7 +102,7 @@ npx playwright install chromium
 npm run test:e2e
 ```
 
-La integración continua ejecuta instalación, tipos, pruebas y compilación en Windows, macOS y Linux; el recorrido de navegador se ejecuta con Chromium en Linux. La existencia del workflow no equivale a una ejecución aprobada: consulta cada resultado en Actions.
+La integración continua ejecuta instalación, tipos, pruebas y compilación en Windows, macOS y Linux; el recorrido de navegador se ejecuta con Chromium en Linux. La versión 1.0.0 superó estas comprobaciones y las pruebas de apertura de los ejecutables. Consulta los resultados y límites de las pruebas en el [informe de validación](docs/validacion.md).
 
 - [Arquitectura y objetivo del producto](docs/arquitectura.md)
 - [Configuración, datos de ejemplo y proveedores reales](docs/configuracion.md)
