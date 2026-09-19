@@ -1,0 +1,63 @@
+{
+  "name": "cantera",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "setup": "node scripts/setup-env.mjs",
+    "dev": "next dev --hostname 127.0.0.1",
+    "build": "next build",
+    "start": "next start --hostname 127.0.0.1",
+    "typecheck": "tsc --noEmit",
+    "db:reset": "supabase db reset",
+    "db:push": "supabase db push",
+    "launch": "node scripts/launch.mjs",
+    "test": "tsx --test tests/*.test.ts",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "check": "npm run typecheck && npm test && npm run build",
+    "desktop:prepare": "node scripts/prepare-desktop.mjs",
+    "desktop": "npm run build && npm run desktop:prepare && electron .",
+    "desktop:dist": "npm run build && npm run desktop:prepare && electron-builder --publish never",
+    "desktop:pack": "npm run build && npm run desktop:prepare && electron-builder --dir --publish never",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
+  },
+  "dependencies": {
+    "@supabase/ssr": "^0.7.0",
+    "@supabase/supabase-js": "^2.58.0",
+    "htmlparser2": "^12.0.0",
+    "ipaddr.js": "^2.5.0",
+    "next": "^16.2.0",
+    "openai": "^6.9.0",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "undici": "^8.10.2"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "^4.13.0",
+    "@playwright/test": "^1.63.0",
+    "@tailwindcss/postcss": "^4.1.0",
+    "@types/node": "^22.10.0",
+    "@types/react": "^19.2.0",
+    "@types/react-dom": "^19.2.0",
+    "electron": "^44.4.3",
+    "electron-builder": "^26.15.3",
+    "prettier": "^3.9.8",
+    "tailwindcss": "^4.1.0",
+    "tsx": "^4.23.13",
+    "typescript": "^5.7.0"
+  },
+  "description": "Cantera: prospección comercial con evidencia, CRM y modo local multiplataforma",
+  "engines": {
+    "node": ">=22.19.0"
+  },
+  "main": "electron/main.cjs",
+  "author": {
+    "name": "Proyecto Cantera"
+  },
+  "homepage": "https://github.com/SirHegel/proyecto-cantera",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/SirHegel/proyecto-cantera.git"
+  }
+}

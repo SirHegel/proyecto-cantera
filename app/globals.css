@@ -1,0 +1,228 @@
+@import "tailwindcss";
+
+@theme {
+  --color-void: #0d0f0e;
+  --color-surface: #151816;
+  --color-raised: #1e221f;
+  --color-line: #2a2f2a;
+  --color-line-lit: #434a41;
+  --color-ink: #f1f2e9;
+  --color-muted: #abb2a7;
+  --color-dim: #879181;
+  --color-gold: #e8c76b;
+  --color-gold-dim: #94783b;
+  --font-sans: "Inter", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  --radius-card: 16px;
+}
+html {
+  color-scheme: dark;
+  scroll-behavior: smooth;
+}
+body {
+  margin: 0;
+  background: var(--color-void);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+button,
+a,
+input,
+select,
+textarea {
+  -webkit-tap-highlight-color: transparent;
+}
+button:not(:disabled),
+summary {
+  cursor: pointer;
+}
+button:disabled {
+  cursor: wait;
+}
+button,
+a {
+  touch-action: manipulation;
+}
+input,
+textarea,
+select {
+  max-width: 100%;
+}
+textarea {
+  resize: vertical;
+}
+input[type="date"] {
+  min-height: 42px;
+}
+input[type="checkbox"] {
+  accent-color: var(--color-gold);
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+a,
+p,
+dd,
+blockquote {
+  overflow-wrap: anywhere;
+}
+.display {
+  font-weight: 600;
+  letter-spacing: -0.035em;
+}
+.eyebrow {
+  font-weight: 600;
+  font-size: 0.6875rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--color-dim);
+}
+.tnum {
+  font-variant-numeric: tabular-nums;
+}
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+}
+.page-title {
+  font-weight: 600;
+  font-size: clamp(1.8rem, 3vw, 2.5rem);
+  letter-spacing: -0.045em;
+  line-height: 1.15;
+  margin-top: 0.6rem;
+}
+.field {
+  width: 100%;
+  min-height: 46px;
+  border: 1px solid var(--color-line);
+  border-radius: 10px;
+  background: var(--color-void);
+  padding: 0.8rem 1rem;
+  color: var(--color-ink);
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+.field::placeholder {
+  color: var(--color-dim);
+}
+.field:hover {
+  border-color: var(--color-line-lit);
+}
+.field:focus {
+  border-color: var(--color-gold);
+}
+.field-label {
+  display: block;
+  margin-bottom: 0.6rem;
+  color: var(--color-ink);
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+.pill {
+  display: inline-flex;
+  min-height: 40px;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border: 1px solid var(--color-line);
+  border-radius: 9px;
+  padding: 0.55rem 0.85rem;
+  font-size: 0.8rem;
+  color: var(--color-muted);
+  transition:
+    background 0.15s,
+    color 0.15s,
+    border-color 0.15s;
+}
+.pill:hover {
+  background: var(--color-raised);
+  color: var(--color-ink);
+  border-color: var(--color-line-lit);
+}
+.pill[aria-pressed="true"],
+.pill[aria-current="page"] {
+  border-color: var(--color-gold-dim);
+  background: #e8c76b12;
+  color: var(--color-gold);
+}
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  border-radius: 6px;
+  background: var(--color-raised);
+  padding: 0.35rem 0.6rem;
+  font-size: 0.7rem;
+  color: var(--color-muted);
+}
+.status-pill::before {
+  content: "";
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: currentColor;
+}
+.notice {
+  border: 1px solid #e8c76b35;
+  border-radius: 12px;
+  background: #e8c76b08;
+  padding: 1rem 1.2rem;
+  color: var(--color-muted);
+  font-size: 0.8125rem;
+  line-height: 1.65;
+}
+.error-message {
+  border-left: 2px solid #e7a49b;
+  padding: 0.6rem 0.9rem;
+  color: #f0b4aa;
+  background: #e7a49b09;
+  font-size: 0.8125rem;
+}
+::selection {
+  background: var(--color-gold);
+  color: var(--color-void);
+}
+:focus-visible {
+  outline: 2px solid var(--color-gold);
+  outline-offset: 4px;
+}
+.skip-link {
+  position: fixed;
+  top: -100px;
+  left: 16px;
+  z-index: 100;
+  border-radius: 8px;
+  padding: 12px 20px;
+  background: var(--color-gold);
+  color: var(--color-void);
+}
+.skip-link:focus {
+  top: 16px;
+}
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+@media (max-width: 640px) {
+  input,
+  textarea,
+  select {
+    font-size: 16px !important;
+  }
+}

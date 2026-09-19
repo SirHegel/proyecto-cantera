@@ -1,0 +1,16 @@
+name: cantera
+services:
+  cantera:
+    build: .
+    ports:
+      - "127.0.0.1:3000:3000"
+    environment:
+      CANTERA_MODE: local
+      PROVIDER_MODE: fixture
+      CANTERA_DATA_DIR: /app/.data
+    volumes:
+      - cantera-data:/app/.data
+    init: true
+    restart: unless-stopped
+volumes:
+  cantera-data:

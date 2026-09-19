@@ -1,0 +1,44 @@
+appId: com.cantera.desktop
+productName: Cantera
+icon: electron/icon.png
+asar: true
+npmRebuild: false
+directories:
+  output: dist
+files:
+  - electron/main.cjs
+  - package.json
+  - "!node_modules/**"
+extraResources:
+  # Copiar desde .desktop evita la exclusión automática del node_modules raíz.
+  - from: .desktop
+    to: .
+    filter:
+      - "server/**/*"
+      - "!.env*"
+      - "!**/.env*"
+      - "!**/*.sqlite*"
+      - "!**/.data/**"
+      - "!**/.cassettes/**"
+artifactName: Cantera-${version}-${os}-${arch}.${ext}
+win:
+  target:
+    - target: nsis
+      arch: [x64]
+nsis:
+  oneClick: false
+  perMachine: false
+  allowToChangeInstallationDirectory: true
+  deleteAppDataOnUninstall: false
+mac:
+  category: public.app-category.business
+  minimumSystemVersion: "13.0"
+  target: [dmg]
+  identity: null
+linux:
+  target: [AppImage, deb]
+  category: Office
+  executableName: cantera
+  synopsis: Prospección comercial y seguimiento de oportunidades
+  maintainer: Proyecto Cantera
+publish: null

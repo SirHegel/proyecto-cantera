@@ -1,0 +1,67 @@
+name: Instaladores de escritorio
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  package:
+    name: ${{ matrix.label }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            label: Windows-x64
+            target: --win --x64
+            executable: dist/win-unpacked/Cantera.exe
+          - os: macos-15-intel
+            label: macOS-Intel
+            target: --mac --x64
+            executable: dist/mac/Cantera.app/Contents/MacOS/Cantera
+          - os: macos-latest
+            label: macOS-Apple-Silicon
+            target: --mac --arm64
+            executable: dist/mac-arm64/Cantera.app/Contents/MacOS/Cantera
+          - os: ubuntu-latest
+            label: Linux-x64
+            target: --linux --x64
+            executable: dist/linux-unpacked/cantera
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 30
+    env:
+      CANTERA_MODE: local
+      PROVIDER_MODE: fixture
+      NEXT_TELEMETRY_DISABLED: 1
+      CSC_IDENTITY_AUTO_DISCOVERY: false
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run desktop:dist -- ${{ matrix.target }}
+      - name: Dependencias gráficas de Linux
+        if: runner.os == 'Linux'
+        run: npx playwright install-deps chromium
+      - name: Abrir y verificar la aplicación (Linux)
+        if: runner.os == 'Linux'
+        run: xvfb-run --auto-servernum node scripts/smoke-desktop.mjs "${{ matrix.executable }}"
+      - name: Abrir y verificar la aplicación (Windows / macOS)
+        if: runner.os != 'Linux'
+        run: node scripts/smoke-desktop.mjs "${{ matrix.executable }}"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Cantera-${{ matrix.label }}
+          path: |
+            dist/*.exe
+            dist/*.dmg
+            dist/*.AppImage
+            dist/*.deb
+          if-no-files-found: error
+          retention-days: 30

@@ -1,0 +1,32 @@
+# Configuración y datos privados
+.env
+.env.*
+!.env.example
+.data/
+.data-*/
+.cassettes/
+*.sqlite
+*.sqlite-shm
+*.sqlite-wal
+backups/
+supabase/.temp/
+supabase/.branches/
+
+# Dependencias y compilación
+node_modules/
+.next/
+out/
+dist/
+.desktop/
+*.tsbuildinfo
+
+# Informes de pruebas y registros
+coverage/
+playwright-report/
+test-results/
+*.log
+
+# Archivos del sistema
+.DS_Store
+Thumbs.db
+.vercel/
