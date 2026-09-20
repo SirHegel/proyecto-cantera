@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { afterEach, beforeEach, mock, test } from "node:test";
-import { mkdtempSync, readdirSync, rmSync, writeFileSync } from "node:fs";
+import { existsSync, mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { getPlacesProvider } from "../lib/providers/places";
@@ -195,6 +195,7 @@ test("OpenAI adapter sends strict Responses schema, attributes usage and verifie
   };
   const result = await getAiProvider("live", settings, { fetch }).qualifyBatch(offer, [item]);
   assert.equal(requestedBody!.text.format.type, "json_schema");
+  assert.equal(requestedBody!.store, false);
   assert.equal(requestedBody!.text.format.strict, true);
   assert.equal(requestedBody!.text.format.name, "qualification");
   assert.equal(JSON.parse(requestedBody!.input[1].content).businesses[0].id, item.id);
@@ -352,4 +353,73 @@ test("corrupt or expired cassettes never silently trigger another paid request",
   );
   await assert.rejects(google.search(query), /caducó/);
   assert.equal(calls, 2);
+});
+
+test("cassette files persist beneath the desktop data directory and explicit paths take precedence", async () => {
+  const previousDataDir = process.env.CANTERA_DATA_DIR;
+  const userData = path.join(directory, "persistent-profile", "data");
+  process.env.CANTERA_DATA_DIR = userData;
+  try {
+    let googleCalls = 0;
+    let aiCalls = 0;
+    const google = getPlacesProvider("cassette", undefined, settings, {
+      fetch: async () => {
+        googleCalls++;
+        return json({ places: [place(1)] });
+      },
+    });
+    const ai = getAiProvider("cassette", settings, {
+      fetch: async () => {
+        aiCalls++;
+        return responseOutput({ problem: "Reservas sin respuesta", niches: ["Clínicas"] });
+      },
+    });
+    await google.search(query);
+    await ai.inferProblem("Reservas locales");
+    const googleFolder = path.join(userData, ".cassettes", "places");
+    const aiFolder = path.join(userData, ".cassettes", "ai");
+    const recordedPlaces = JSON.parse(
+      readFileSync(path.join(googleFolder, readdirSync(googleFolder)[0]), "utf8"),
+    );
+    const recordedAi = JSON.parse(
+      readFileSync(path.join(aiFolder, readdirSync(aiFolder)[0]), "utf8"),
+    );
+    assert.equal(recordedPlaces.places[0].placeId, place(1).id);
+    assert.equal(recordedAi.result.problem, "Reservas sin respuesta");
+    // New provider instances must read the recorded files, with global networking forbidden.
+    assert.equal((await getPlacesProvider("cassette").search(query)).calls, 0);
+    assert.equal(
+      (await getAiProvider("cassette").inferProblem("Reservas locales")).usage.costUsd,
+      0,
+    );
+    assert.equal(googleCalls, 1);
+    assert.equal(aiCalls, 1);
+
+    const override = path.join(directory, "explicit-cassettes");
+    await getAiProvider("cassette", settings, {
+      cassetteDir: override,
+      fetch: async () => responseOutput({ problem: "Otra grabación", niches: ["Clínicas"] }),
+    }).inferProblem("Ruta explícita");
+    assert.equal(readdirSync(override).length, 1);
+    assert.equal(readdirSync(aiFolder).length, 1);
+  } finally {
+    if (previousDataDir === undefined) delete process.env.CANTERA_DATA_DIR;
+    else process.env.CANTERA_DATA_DIR = previousDataDir;
+  }
+});
+
+test("cassette development fallback remains beneath the current directory", async () => {
+  const previousDataDir = process.env.CANTERA_DATA_DIR;
+  delete process.env.CANTERA_DATA_DIR;
+  mock.method(process, "cwd", () => directory);
+  try {
+    await getPlacesProvider("cassette", undefined, settings, {
+      fetch: async () => json({ places: [place(2)] }),
+    }).search(query);
+    assert.ok(existsSync(path.join(directory, ".cassettes", "places")));
+    assert.equal((await getPlacesProvider("cassette").search(query)).calls, 0);
+  } finally {
+    if (previousDataDir === undefined) delete process.env.CANTERA_DATA_DIR;
+    else process.env.CANTERA_DATA_DIR = previousDataDir;
+  }
 });

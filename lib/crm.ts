@@ -6,7 +6,7 @@
  */
 
 export const ESTADOS = {
-  nuevo: "Nuevo",
+  nuevo: "Sin contactar",
   listo: "Listo para contactar",
   contactado: "Contactado",
   respondio: "Respondió",

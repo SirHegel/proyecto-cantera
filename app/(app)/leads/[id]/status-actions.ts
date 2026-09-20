@@ -51,6 +51,10 @@ export async function setStatus(leadId: string, estado: Estado): Promise<void> {
     patch.next_followup_at = enDias(DIAS_SIGUIENTE[0]!);
     patch.followup_count = 0;
   }
+  if (estado === "nuevo" || estado === "listo") {
+    patch.next_followup_at = null;
+    patch.followup_count = 0;
+  }
   if (["respondio", "demo", "conversacion", "cerrado", "descartado"].includes(estado))
     patch.next_followup_at = null;
   const { error } = await db.from("leads").update(patch).eq("id", leadId).eq("user_id", user.id);

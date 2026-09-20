@@ -3,6 +3,7 @@ import { createHash } from "node:crypto";
 import { promises as fs } from "node:fs";
 import path from "node:path";
 import OpenAI from "openai";
+import { cassetteDirectory } from "./cassette-path";
 import {
   costOf,
   type AiProvider,
@@ -18,7 +19,6 @@ import {
 
 const BULK = process.env.OPENAI_BULK_MODEL ?? "gpt-5.6-luna";
 const QUALITY = process.env.OPENAI_QUALITY_MODEL ?? "gpt-5.6-terra";
-const CASSETTE_DIR = path.join(process.cwd(), ".cassettes", "ai");
 
 // El system prompt se mantiene estable e idéntico entre llamadas: es lo que
 // activa el descuento de caché de prefijo (90% sobre el input).
@@ -168,6 +168,7 @@ class OpenAiProvider implements AiProvider {
     try {
       res = await this.client.responses.create({
         model,
+        store: false,
         reasoning: { effort } as never,
         max_output_tokens: 5000,
         input: [
@@ -464,7 +465,7 @@ class CassetteAi implements AiProvider {
   readonly mode: ProviderMode = "cassette";
   constructor(
     private live: () => AiProvider = () => new OpenAiProvider(),
-    private directory = CASSETTE_DIR,
+    private directory = cassetteDirectory("ai"),
   ) {}
 
   private async replay<T extends { usage: AiUsage }>(

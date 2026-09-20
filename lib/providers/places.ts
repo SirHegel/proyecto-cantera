@@ -3,6 +3,7 @@ import type { ProviderSettings } from "@/lib/settings";
 import { createHash } from "node:crypto";
 import { promises as fs } from "node:fs";
 import path from "node:path";
+import { cassetteDirectory } from "./cassette-path";
 import type {
   PlacesProvider,
   PlacesQuery,
@@ -10,8 +11,6 @@ import type {
   ProviderMode,
   ProviderRuntime,
 } from "./types";
-
-const CASSETTE_DIR = path.join(process.cwd(), ".cassettes", "places");
 
 function keyOf(q: PlacesQuery): string {
   const raw = `${q.niche}|${q.city}|${q.country}|${q.language}|${q.limit}`
@@ -187,7 +186,7 @@ class CassettePlaces implements PlacesProvider {
   readonly mode: ProviderMode = "cassette";
   constructor(
     private readonly live = new GooglePlaces(),
-    private readonly directory = CASSETTE_DIR,
+    private readonly directory = cassetteDirectory("places"),
   ) {}
 
   async search(q: PlacesQuery) {

@@ -6,22 +6,40 @@ import { supabaseServer } from "@/lib/supabase/server";
 import { isLocalMode } from "@/lib/runtime";
 import { getProviderStatus } from "@/lib/settings";
 
-export default async function BuscarPage() {
+const HISTORY_PAGE_SIZE = 8;
+
+export default async function BuscarPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ page?: string | string[] }>;
+}) {
+  const { page: pageParam } = await searchParams;
+  const parsedPage =
+    typeof pageParam === "string" && /^[1-9]\d*$/.test(pageParam) ? Number(pageParam) : 1;
+  const requestedPage = Number.isSafeInteger(parsedPage) ? parsedPage : 1;
   const supabase = await supabaseServer();
-  const providers = await getProviderStatus();
-  const [{ data: offer }, { data: searches }] = await Promise.all([
+  const [{ data: offer }, { count, error: countError }, providers] = await Promise.all([
     supabase
       .from("offers")
       .select("what_i_sell, problem_solved")
       .order("created_at", { ascending: false })
       .limit(1)
       .maybeSingle(),
-    supabase
-      .from("searches")
-      .select("id, niche, city, status, mode, created_at")
-      .order("created_at", { ascending: false })
-      .limit(8),
+    supabase.from("searches").select("id", { count: "exact", head: true }),
+    getProviderStatus(),
   ]);
+  if (countError) throw new Error("No pudimos cargar el historial de búsquedas.");
+  const totalSearches = count ?? 0;
+  const totalPages = Math.max(1, Math.ceil(totalSearches / HISTORY_PAGE_SIZE));
+  const page = Math.min(requestedPage, totalPages);
+  const from = (page - 1) * HISTORY_PAGE_SIZE;
+  const { data: searches, error: searchesError } = await supabase
+    .from("searches")
+    .select("id, niche, city, status, mode, created_at")
+    .order("created_at", { ascending: false })
+    .order("id", { ascending: false })
+    .range(from, from + HISTORY_PAGE_SIZE - 1);
+  if (searchesError) throw new Error("No pudimos cargar el historial de búsquedas.");
   return (
     <>
       <div className="page-header">
@@ -64,27 +82,91 @@ export default async function BuscarPage() {
               ))}
             </ol>
           </div>
-          {!!searches?.length && (
-            <div className="rounded-card border border-line p-5">
-              <Eyebrow>Búsquedas recientes</Eyebrow>
-              <div className="mt-3 divide-y divide-line">
+          <section
+            id="search-history"
+            aria-labelledby="search-history-title"
+            className="scroll-mt-24 rounded-card border border-line p-5"
+          >
+            <h2 id="search-history-title" className="eyebrow">
+              Historial de búsquedas
+            </h2>
+            <p className="tnum mt-2 text-[11px] text-dim">
+              {totalSearches} {totalSearches === 1 ? "búsqueda guardada" : "búsquedas guardadas"}
+            </p>
+            {searches?.length ? (
+              <ul className="mt-3 divide-y divide-line">
                 {searches.map((search) => (
-                  <Link href={`/buscar/${search.id}`} key={search.id} className="group block py-3">
-                    <p className="text-[13px] text-muted group-hover:text-gold">{search.niche}</p>
-                    <p className="mt-1 text-[10px] text-dim">
-                      {search.city || "Todo el país"} ·{" "}
-                      {search.mode === "demo" ? "Ejemplo" : "Conectada"} ·{" "}
-                      {search.status === "done"
-                        ? "Completada"
-                        : search.status === "error"
-                          ? "Pendiente de revisión"
-                          : "En proceso"}
-                    </p>
-                  </Link>
+                  <li key={search.id}>
+                    <Link
+                      href={`/buscar/${search.id}`}
+                      aria-label={`Abrir búsqueda: ${search.niche}, ${search.city || "todo el país"}, ${new Date(search.created_at).toLocaleString("es")}`}
+                      className="group block py-3"
+                    >
+                      <p className="text-[13px] text-muted group-hover:text-gold">{search.niche}</p>
+                      <p className="mt-1 text-[10px] text-dim">
+                        {search.city || "Todo el país"} ·{" "}
+                        {search.mode === "demo" ? "Ejemplo" : "Conectada"} ·{" "}
+                        {search.status === "done"
+                          ? "Completada"
+                          : search.status === "failed"
+                            ? "Pendiente de revisión"
+                            : "En proceso"}
+                      </p>
+                      <time
+                        dateTime={search.created_at}
+                        className="tnum mt-1 block text-[10px] text-dim"
+                      >
+                        {new Date(search.created_at).toLocaleDateString("es", {
+                          day: "numeric",
+                          month: "short",
+                          year: "numeric",
+                        })}
+                      </time>
+                    </Link>
+                  </li>
                 ))}
-              </div>
-            </div>
-          )}
+              </ul>
+            ) : (
+              <p className="mt-4 text-[12px] leading-relaxed text-dim">
+                Tus búsquedas se guardarán aquí automáticamente al iniciarlas.
+              </p>
+            )}
+            {totalPages > 1 && (
+              <nav aria-label="Paginación del historial" className="mt-4 border-t border-line pt-4">
+                <p className="tnum mb-3 text-[11px] text-dim" aria-live="polite">
+                  Página {page} de {totalPages}
+                </p>
+                <div className="flex flex-wrap justify-between gap-2">
+                  {page > 1 ? (
+                    <Link
+                      href={`/buscar?page=${page - 1}#search-history`}
+                      aria-label="Página anterior del historial"
+                      className="pill"
+                    >
+                      ← Anterior
+                    </Link>
+                  ) : (
+                    <span className="pill opacity-40" aria-disabled="true">
+                      ← Anterior
+                    </span>
+                  )}
+                  {page < totalPages ? (
+                    <Link
+                      href={`/buscar?page=${page + 1}#search-history`}
+                      aria-label="Página siguiente del historial"
+                      className="pill"
+                    >
+                      Siguiente →
+                    </Link>
+                  ) : (
+                    <span className="pill opacity-40" aria-disabled="true">
+                      Siguiente →
+                    </span>
+                  )}
+                </div>
+              </nav>
+            )}
+          </section>
         </aside>
       </div>
     </>

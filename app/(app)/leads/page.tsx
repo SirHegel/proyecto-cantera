@@ -11,7 +11,7 @@ const GRUPOS: { key: string; label: string; estados: Estado[] }[] = [
     label: "Activos",
     estados: ["nuevo", "listo", "contactado", "respondio", "demo", "conversacion"],
   },
-  { key: "listo", label: "Por contactar", estados: ["listo"] },
+  { key: "listo", label: "Por contactar", estados: ["nuevo", "listo"] },
   { key: "esperando", label: "Esperando respuesta", estados: ["contactado"] },
   { key: "vivos", label: "En conversación", estados: ["respondio", "demo", "conversacion"] },
   { key: "cerrados", label: "Cerrados", estados: ["cerrado"] },
