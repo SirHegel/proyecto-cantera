@@ -40,8 +40,11 @@ async function navigate(page, pathname) {
 try {
   let page = await open();
   assert.equal(await application.evaluate(({ app }) => app.getPath("userData")), profile);
-  assert.equal(await page.evaluate(() => typeof window.require), "undefined");
   await expect(page).toHaveURL(/^http:\/\/127\.0\.0\.1:\d+\/login/);
+  await expect(page.getByLabel("Correo electrónico", { exact: true })).toBeVisible();
+  // firstWindow puede devolver about:blank mientras Electron navega al login.
+  // Evalúa el aislamiento solo cuando la pantalla de acceso ya está cargada.
+  assert.equal(await page.evaluate(() => typeof window.require), "undefined");
   await page.goto(new URL("/login?mode=register", page.url()).href);
   await page.getByLabel("Nombre", { exact: true }).fill("Prueba de escritorio");
   await page.getByLabel("Correo electrónico", { exact: true }).fill("desktop@example.test");

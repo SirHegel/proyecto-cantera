@@ -1,5 +1,11 @@
 # Operación y mantenimiento
 
+## Descargar y actualizar
+
+Los instaladores son públicos y se encuentran en [la última Release de Cantera](https://github.com/SirHegel/proyecto-cantera/releases/latest). Cierra la aplicación, realiza una copia de sus datos e instala la nueva versión para tu sistema. Conserva la misma carpeta de datos y usa tu cuenta local habitual. No hay actualización ni sincronización automáticas entre equipos.
+
+Consulta las notas y el [informe de validación](validacion.md) de cada versión. Las instrucciones del código en desarrollo no certifican un instalador que todavía no se ha publicado.
+
 ## Copias de seguridad
 
 Cierra Cantera antes de copiar los datos. SQLite utiliza WAL: copiar únicamente `cantera.sqlite` mientras la aplicación sigue abierta puede perder operaciones recientes.
@@ -9,8 +15,13 @@ Copia la carpeta de datos completa y guárdala en un lugar privado:
 - Ejecutando desde el código: `.data/` dentro de `cantera`, salvo que hayas definido `CANTERA_DATA_DIR`.
 - Instalador de escritorio: carpeta `data` de la ubicación indicada en [escritorio.md](escritorio.md).
 - Incluye los archivos de configuración de proveedores y `provider-key`; sin esa clave no se podrán descifrar las credenciales guardadas.
+- Si usas cassette en escritorio, incluye `data/.cassettes/`. Ejecutando desde el código sin `CANTERA_DATA_DIR`, esa carpeta está en la raíz del proyecto y requiere una copia separada.
 
 Para restaurar, cierra la aplicación, conserva primero una copia de sus datos actuales y sustituye la carpeta completa por el respaldo. No mezcles bases y claves de instalaciones diferentes. La copia contiene datos privados y cuentas: no la subas a GitHub. La cuenta local no se recupera mediante correo; conserva sus credenciales y respaldos.
+
+Las búsquedas, contactos guardados, estados, notas, mensajes y seguimientos pertenecen a esa base. Cambiar un lead a **Sin contactar** limpia su agenda automática y conserva su historial; no elimina el lead. El CSV de contactos es útil para consultar o compartir datos, pero no reemplaza una copia completa de cuentas, configuración e historial. Consulta [Tus datos y el seguimiento](datos-y-seguimiento.md).
+
+La copia local no incluye ni controla lo que Google, OpenAI o las webs consultadas procesan o conservan en sus sistemas. Cambiar a datos ficticios evita nuevas llamadas de esas funciones; no revoca automáticamente las claves ni borra datos en servicios externos.
 
 ## Docker opcional
 
@@ -55,18 +66,21 @@ El requisito de Node responde tanto al SQLite integrado como a las dependencias 
 
 ## Problemas habituales
 
-| Síntoma                                              | Acción                                                                                                                |
-| ---------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
-| El lanzador no encuentra Node                        | Instala Node 24 LTS con npm y abre una terminal nueva. El instalador de escritorio no lo necesita.                    |
-| El puerto 3000 está ocupado                          | Ejecuta `npm run launch -- --port 3001`. En escritorio el puerto se elige automáticamente.                            |
-| No abre el navegador                                 | Entra manualmente en la URL de la terminal. Puedes usar `--no-open`.                                                  |
-| Dependencias de otro sistema                         | No copies `node_modules` entre equipos. Ejecuta `npm ci` en el sistema destino.                                       |
-| Aparecen siempre los mismos negocios                 | Estás usando fixtures. Configura proveedores reales para consultar el nicho y lugar seleccionados.                    |
-| Places/OpenAI devuelve un error                      | Verifica clave, API habilitada, facturación, cuotas y acceso a modelos en el proyecto correspondiente.                |
-| No se encuentran mis datos después de mover carpetas | Revisa `CANTERA_DATA_DIR` y restaura el respaldo completo. Los datos de escritorio no están en la carpeta del código. |
-| Olvidé la contraseña de una cuenta local             | No hay restablecimiento por correo en modo local. No borres la base para intentar recuperarla.                        |
-| Falla una actualización desde el código              | Conserva `.data/` y `.env.local`, actualiza fuentes y lockfile, luego usa `npm run launch`.                           |
-| macOS/Windows advierte del editor                    | Los paquetes carecen de firma comercial. Consulta la guía de distribución y utiliza una fuente de confianza.          |
+| Síntoma                                                 | Acción                                                                                                                 |
+| ------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| El lanzador no encuentra Node                           | Instala Node 24 LTS con npm y abre una terminal nueva. El instalador de escritorio no lo necesita.                     |
+| El puerto 3000 está ocupado                             | Ejecuta `npm run launch -- --port 3001`. En escritorio el puerto se elige automáticamente.                             |
+| No abre el navegador                                    | Entra manualmente en la URL de la terminal. Puedes usar `--no-open`.                                                   |
+| Dependencias de otro sistema                            | No copies `node_modules` entre equipos. Ejecuta `npm ci` en el sistema destino.                                        |
+| Aparecen siempre los mismos negocios                    | Estás usando fixtures. Configura proveedores reales para consultar el nicho y lugar seleccionados.                     |
+| No veo una búsqueda antigua                             | Abre Buscar clientes → Historial de búsquedas y usa Anterior/Siguiente; cada página muestra ocho registros.            |
+| Un lead sin contactar no aparece en Esperando respuesta | Es correcto: Sin contactar y Listo para contactar se agrupan en Por contactar. Marca Contactado después de escribirle. |
+| Marqué Contactado por error                             | Abre la ficha y vuelve a Sin contactar. Se limpia la próxima fecha y se reinicia el contador, conservando las notas.   |
+| Places/OpenAI devuelve un error                         | Verifica clave, API habilitada, facturación, cuotas y acceso a modelos en el proyecto correspondiente.                 |
+| No se encuentran mis datos después de mover carpetas    | Revisa `CANTERA_DATA_DIR` y restaura el respaldo completo. Los datos de escritorio no están en la carpeta del código.  |
+| Olvidé la contraseña de una cuenta local                | No hay restablecimiento por correo en modo local. No borres la base para intentar recuperarla.                         |
+| Falla una actualización desde el código                 | Conserva `.data/` y `.env.local`, actualiza fuentes y lockfile, luego usa `npm run launch`.                            |
+| macOS/Windows advierte del editor                       | Los paquetes carecen de firma comercial. Consulta la guía de distribución y utiliza una fuente de confianza.           |
 
 ## Qué valida cada entorno
 

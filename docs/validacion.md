@@ -1,4 +1,20 @@
-# Validación de la versión 1.0.0
+# Validación de Cantera
+
+## Versión 1.0.1
+
+La [verificación de la versión 1.0.1](https://github.com/SirHegel/proyecto-cantera/actions/runs/35478460426) terminó correctamente en Windows, macOS y Linux: 31 pruebas, TypeScript y compilación, además de tres escenarios de navegador con Chromium. El código verificado corresponde al commit `1aa46baa85fccfd2ea3413ba7cde7b4ec6657d83`.
+
+En Linux se amplió la prueba del ejecutable de escritorio: registra una cuenta, ejecuta una búsqueda demo, genera un ángulo y mensaje, cambia el estado a Contactado, guarda una nota y cierra completamente la aplicación. Con el proceso cerrado, lee `userData/data/cantera.sqlite` y comprueba oferta, búsqueda, cliente, estado, nota, mensaje y seguimiento. Al volver a abrir, los datos siguen accesibles desde la interfaz y el CSV.
+
+La prueba también reproduce Contactado → Sin contactar → Contactado y verifica que al volver a Sin contactar desaparece el recordatorio anterior. Falló con el instalador 1.0.0 en ese punto y pasó con la corrección. Para comprobar el historial paginado añade ocho búsquedas sintéticas únicamente a su perfil temporal y recupera la búsqueda original desde la segunda página después de reiniciar.
+
+El mismo recorrido ampliado pasó en el archivo AppImage 1.0.1 descargable de Linux, usando `APPIMAGE_EXTRACT_AND_RUN=1` para el entorno sin FUSE. Se mantienen los límites del sandbox de automatización descritos en este informe.
+
+Las pruebas de proveedores verifican la escritura y reproducción de cassettes dentro de la carpeta privada del usuario y el envío de `store: false` a OpenAI. Usan respuestas HTTP simuladas, sin llamadas de pago. El almacenamiento de trabajo es local; el modo real requiere servicios externos y no se declara retención externa cero.
+
+Los límites de firma, instalación y sandbox indicados abajo siguen aplicándose. Las pruebas usan perfiles temporales y no modifican los datos de la persona que ejecuta Cantera.
+
+## Versión 1.0.0
 
 Comprobación local en Linux con Node 24 y Chrome, 19 de septiembre de 2026.
 

@@ -4,9 +4,9 @@
 
 Electron incluye el navegador y Node necesarios para ejecutar Cantera. El usuario final abre un instalador, crea una cuenta local y usa la aplicación. El servidor solo escucha en `127.0.0.1`; se inicia y detiene con la ventana.
 
-Los cinco archivos de la versión 1.0.0 están disponibles en la [Release de Cantera](https://github.com/SirHegel/proyecto-cantera/releases/tag/v1.0.0), junto con `SHA256SUMS.txt` para comprobar su integridad. Las descargas requieren acceso al repositorio privado. Puedes distribuir los instaladores directamente sin compartir el código ni las cuentas de desarrollo.
+Los instaladores están disponibles públicamente en [la última Release de Cantera](https://github.com/SirHegel/proyecto-cantera/releases/latest), junto con `SHA256SUMS.txt` para comprobar su integridad. Elige Windows x64, macOS Intel, macOS Apple Silicon, Linux AppImage o Debian/Ubuntu `.deb`. Consulta las notas y los resultados de validación de la versión que descargues.
 
-En Debian/Ubuntu, se recomienda instalar el paquete `.deb` con el gestor de paquetes: incluye la configuración de integración y sandbox. En otras distribuciones Linux, da permiso de ejecución al AppImage desde las propiedades del archivo; requiere FUSE2 y un sistema compatible con el sandbox de Chromium. Si falta FUSE, `APPIMAGE_EXTRACT_AND_RUN=1 ./Cantera-1.0.0-linux-x86_64.AppImage` evita el montaje, pero no resuelve restricciones del sandbox. Si este falla, utiliza un paquete instalado compatible con tu distribución.
+En Debian/Ubuntu, se recomienda instalar el paquete `.deb` con el gestor de paquetes: incluye la configuración de integración y sandbox. En otras distribuciones Linux, da permiso de ejecución al AppImage desde las propiedades del archivo; requiere FUSE2 y un sistema compatible con el sandbox de Chromium. La opción `APPIMAGE_EXTRACT_AND_RUN=1` al ejecutar el archivo evita el montaje cuando falta FUSE, pero no resuelve restricciones del sandbox. Si este falla, utiliza un paquete instalado compatible con tu distribución.
 
 Los paquetes actuales usan Electron 44 y requieren Windows 10 o posterior, o macOS 13 Ventura o posterior; estos mínimos corresponden a los [cambios de compatibilidad oficiales](https://www.electronjs.org/docs/latest/breaking-changes). Linux necesita un escritorio x64 y las bibliotecas gráficas del sistema. No se generan paquetes de 32 bits.
 
@@ -63,7 +63,11 @@ La aplicación usa `app.getPath('userData')/data`:
 | macOS   | `~/Library/Application Support/Cantera/data`                      |
 | Linux   | `~/.config/Cantera/data` o su equivalente según `XDG_CONFIG_HOME` |
 
-La carpeta contiene la base de cuentas y leads, configuración cifrada y su clave local. `server.log`, en el directorio padre, ayuda a diagnosticar fallos de arranque y se renueva en cada inicio. Consulta [copias de seguridad](operacion.md).
+La carpeta contiene `cantera.sqlite` con cuentas, búsquedas, leads, mensajes generados, notas, estados y fechas de seguimiento. Las claves de proveedores se guardan cifradas en `providers/`, con su clave de cifrado en `provider-key`. Si se activa el modo de grabación para pruebas, sus archivos quedan en `data/.cassettes/`, fuera de los recursos del instalador. La base SQLite no está cifrada por completo; protege el acceso a tu usuario del sistema.
+
+`server.log`, en el directorio padre, ayuda a diagnosticar fallos de arranque y se renueva en cada inicio. Al actualizar, conserva la carpeta de datos y vuelve a entrar con tu misma cuenta local. Cambiar de instalador no traslada datos entre equipos. Consulta [copias de seguridad](operacion.md) y la guía [Tus datos y el seguimiento](datos-y-seguimiento.md).
+
+La aplicación distribuida no sube el CRM a un servidor de Cantera ni lo sincroniza automáticamente. Las funciones reales sí envían consultas a Google Places y contexto de análisis o redacción a OpenAI, además de visitar las webs de negocios. Usar una base local no elimina ese procesamiento externo. Una instalación con Supabase compartido es una configuración separada y explícita.
 
 En entornos de prueba puedes definir `CANTERA_USER_DATA_DIR` para usar un perfil separado. `node scripts/smoke-desktop.mjs` comprueba la ventana, el registro y la persistencia en una carpeta temporal; necesita un entorno gráfico y el servidor preparado. Puedes pasar como argumento la ruta al ejecutable ya empaquetado para comprobar ese binario.
 

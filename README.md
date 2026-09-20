@@ -2,11 +2,11 @@
 
 Cantera ayuda a convertir negocios encontrados en oportunidades comerciales: definir una oferta, buscar empresas, revisar sus webs públicas, priorizar con evidencia, preparar mensajes y organizar el seguimiento en un CRM.
 
-Incluye una aplicación de escritorio para Windows, macOS y Linux, y una versión web que puede ejecutarse en el propio equipo. Cada persona puede crear su cuenta local. Los datos y la cuenta permanecen en ese equipo; no se sincronizan automáticamente entre computadoras.
+Incluye una aplicación de escritorio para Windows, macOS y Linux, y una versión web que puede ejecutarse en el propio equipo. Cada persona puede crear su cuenta local. La cuenta y el CRM se guardan en ese equipo, sin sincronización automática entre computadoras. Al activar búsquedas reales, Google Places y OpenAI procesan las consultas y el contenido necesario para sus funciones.
 
 ## Instalar la aplicación
 
-Descarga el archivo de tu sistema desde [Cantera 1.0.0 — instaladores](https://github.com/SirHegel/proyecto-cantera/releases/tag/v1.0.0). El repositorio es privado: necesitas acceso para descargar desde GitHub. También puedes instalar los archivos compartidos directamente por el responsable del proyecto.
+Descarga el archivo de tu sistema desde [la última versión publicada de Cantera](https://github.com/SirHegel/proyecto-cantera/releases/latest). El repositorio y las descargas son públicos. En esa página encontrarás los instaladores, las notas de la versión y `SHA256SUMS.txt` para comprobar sus archivos.
 
 | Sistema             | Archivo                           | Instalación                                       |
 | ------------------- | --------------------------------- | ------------------------------------------------- |
@@ -16,7 +16,7 @@ Descarga el archivo de tu sistema desde [Cantera 1.0.0 — instaladores](https:/
 | Linux x64           | `Cantera-…-linux-x86_64.AppImage` | Dale permiso de ejecución y ábrelo.               |
 | Debian/Ubuntu x64   | `Cantera-…-linux-amd64.deb`       | Instálalo con el gestor de paquetes.              |
 
-El instalador incluye el entorno necesario: el usuario final no necesita Node.js ni Docker. Los paquetes actuales no incorporan firma comercial de Windows ni notarización de Apple; el sistema puede advertir sobre el editor. Los cuatro ejecutables se abrieron correctamente en sus sistemas mediante pruebas automatizadas de registro y persistencia. Consulta la [validación de esta versión](docs/validacion.md) y las instrucciones de [distribución y firma](docs/escritorio.md).
+El instalador incluye el entorno necesario: el usuario final no necesita Node.js ni Docker. Los paquetes actuales no incorporan firma comercial de Windows ni notarización de Apple; el sistema puede advertir sobre el editor. Consulta los resultados de cada versión en el [informe de validación](docs/validacion.md) y las instrucciones de [distribución y firma](docs/escritorio.md).
 
 En Debian/Ubuntu se recomienda el `.deb`, que configura la integración y el sandbox al instalarse. El AppImage necesita FUSE2 y un sistema compatible con el sandbox de Chromium.
 
@@ -28,9 +28,14 @@ En Debian/Ubuntu se recomienda el `.deb`, que configura la integración y el san
 4. Para buscar negocios reales, configura tus claves de Google Places y OpenAI, selecciona el modo real y guarda.
 5. En **Buscar clientes**, elige nicho, ubicación e idioma; ejecuta la búsqueda.
 6. Revisa la evidencia de cada resultado, guarda los leads útiles y genera un ángulo y un borrador de mensaje.
-7. Copia el texto, contacta a la persona por tu canal habitual y registra el avance y sus seguimientos.
+7. Revisa **Mis leads → Por contactar**: incluye los estados **Sin contactar** y **Listo para contactar**.
+8. Copia el texto y contacta por tu canal habitual. Después marca **Contactado**; así queda registrado y se programa el primer seguimiento.
+
+Si marcas un contacto por error, vuelve a **Sin contactar**: se limpia su próxima fecha y se reinicia el contador de seguimientos, conservando sus notas e historial. En **Buscar clientes → Historial de búsquedas** puedes volver a las búsquedas anteriores; se muestran ocho por página con controles Anterior y Siguiente y el total guardado.
 
 Cantera prepara borradores; no envía correos ni mensajes automáticamente. Los resultados de ejemplo son ficticios y no cambian por elegir otra ciudad: sirven para probar el recorrido. La búsqueda real necesita conexión, claves válidas y facturación de los proveedores. Consulta [configuración](docs/configuracion.md).
+
+La guía [Tus datos y el seguimiento de clientes](docs/datos-y-seguimiento.md) explica dónde se guardan búsquedas, contactos, mensajes, estados y notas, cómo conservarlos al actualizar y qué información procesan los servicios externos.
 
 ## Ejecutar desde el código
 
@@ -65,7 +70,8 @@ npm run desktop:dist
 
 - Panel de actividad, búsquedas guiadas y resultados ordenados por puntuación.
 - Extracción de señales públicas y separación de hechos e interpretaciones.
-- Ficha de oportunidad, notas, estados, mensajes y seguimiento comercial.
+- Ficha de oportunidad, notas, estados, mensajes y seguimiento comercial, con separación entre pendientes de contacto y contactados.
+- Historial de búsquedas con total y navegación de ocho registros por página.
 - Registro e inicio de sesión local; persistencia SQLite y claves de proveedor cifradas.
 - Interfaz adaptable a escritorio y móvil.
 - Modo Supabase opcional para autenticación y datos compartidos.
@@ -102,9 +108,10 @@ npx playwright install chromium
 npm run test:e2e
 ```
 
-La integración continua ejecuta instalación, tipos, pruebas y compilación en Windows, macOS y Linux; el recorrido de navegador se ejecuta con Chromium en Linux. La versión 1.0.0 superó estas comprobaciones y las pruebas de apertura de los ejecutables. Consulta los resultados y límites de las pruebas en el [informe de validación](docs/validacion.md).
+La integración continua ejecuta instalación, tipos, pruebas y compilación en Windows, macOS y Linux; el recorrido de navegador se ejecuta con Chromium en Linux. Consulta los resultados y límites de cada versión en el [informe de validación](docs/validacion.md). La documentación del código en desarrollo puede adelantarse a la última Release publicada.
 
 - [Arquitectura y objetivo del producto](docs/arquitectura.md)
+- [Tus datos, historial y seguimiento de clientes](docs/datos-y-seguimiento.md)
 - [Configuración, datos de ejemplo y proveedores reales](docs/configuracion.md)
 - [Instaladores, compilación y firma](docs/escritorio.md)
 - [Copias de seguridad, Docker y solución de problemas](docs/operacion.md)
